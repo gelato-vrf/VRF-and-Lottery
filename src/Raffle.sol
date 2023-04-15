@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import "lib/automate/contracts/Automate.sol";
+
 contract Raffle {
     enum RaffleState {
         OPEN,
         CALCULATING
     }
+
     uint256 private immutable i_interval;
     uint256 private immutable i_entranceFee;
     uint256 private s_lastTimeStamp;
@@ -22,6 +25,7 @@ contract Raffle {
         uint256 numPlayers,
         uint256 raffleState
     );
+
     error Raffle__TransferFailed();
     error Raffle__SendMoreToEnterRaffle();
     error Raffle__RaffleNotOpen();
