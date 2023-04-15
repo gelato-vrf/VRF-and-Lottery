@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "lib/automate/contracts/integrations/AutomateTaskCreator.sol";
-
-contract Lottery is AutomateTaskCreator {
+contract Lottery {
     address public deployer;
     address[] public players;
     LotteryState public state;
@@ -12,30 +10,24 @@ contract Lottery is AutomateTaskCreator {
     uint256 public lotteryDuration;
     uint256 public minDepositAmount;
 
+    address gelatoOp;
+    uint256 randomNumber;
+
     enum LotteryState {
         NOTRUNNING,
         RUNNING
     }
 
-    event LotteryStarted(
-        uint256 startTime,
-        uint256 endTime,
-        address LotteryDeployer
-    );
+    event LotteryStarted(uint256 startTime, uint256 endTime, address LotteryDeployer);
     event WinnerSelected(address indexed winner, uint256 amount);
     event LotteryEnded(uint256 timestamp);
 
-    constructor(uint256 _lotteryDuration, uint256 _minDepositAmount, address _automate)
-      AutomateTaskCreator(_automate, msg.sender) // fundsOwner == deployer
-    {
+    constructor(uint256 _lotteryDuration, address _gelatoOp, uint256 _minDepositAmount) {
+        gelatoOp = _gelatoOp;
         deployer = msg.sender;
         state = LotteryState.NOTRUNNING;
         lotteryDuration = _lotteryDuration;
         minDepositAmount = _minDepositAmount;
-    }
-
-    function depositForGelato() external payable {
-        _depositFunds(msg.value, ETH);
     }
 
     function startLottery() public {
@@ -47,33 +39,25 @@ contract Lottery is AutomateTaskCreator {
     }
 
     function enter() public payable {
-        require(
-            msg.value >= minDepositAmount,
-            "Please deposit the minimum amount required"
-        );
+        require(msg.value >= minDepositAmount, "Please deposit the minimum amount required");
         require(state == LotteryState.RUNNING, "Lottery is not running");
-        require(
-            block.timestamp < lotteryEndTime,
-            "Lottery entry time has ended"
-        );
+        require(block.timestamp < lotteryEndTime, "Lottery entry time has ended");
 
         players.push(msg.sender);
     }
 
-    function getRandom() private view returns (uint256) {
-        //TODO : fetch drand feed data with gelato
+    function getRandom(uint256 newRandomNumber) external {
+        require(msg.sender == gelatoOp, "caller is not the gelato operator");
+        randomNumber = newRandomNumber;
     }
 
     function pickWinner() public {
         require(state == LotteryState.RUNNING, "Lottery is not running");
-        require(
-            block.timestamp >= lotteryEndTime,
-            "Lottery time has not ended"
-        );
+        require(block.timestamp >= lotteryEndTime, "Lottery time has not ended");
         require(players.length > 0, "No players in the lottery");
 
-        uint256 randomIndex = getRandom() % players.length;
-        address winner = players[randomIndex];
+        uint256 randomWinner = randomNumber % players.length;
+        address winner = players[randomWinner];
         uint256 amountWon = address(this).balance;
         payable(winner).transfer(amountWon);
 
@@ -88,11 +72,7 @@ contract Lottery is AutomateTaskCreator {
         return players;
     }
 
-    function getLotteryTimes()
-        public
-        view
-        returns (uint256 startTime, uint256 endTime)
-    {
+    function getLotteryTimes() public view returns (uint256 startTime, uint256 endTime) {
         if (state == LotteryState.NOTRUNNING) {
             return (0, 0);
         } else {
