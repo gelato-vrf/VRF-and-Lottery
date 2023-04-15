@@ -56,9 +56,13 @@ contract Lottery {
         players.push(msg.sender);
     }
 
-    function getRandom(uint256 newRandomNumber) external {
+    function setRandom(uint256 newRandomNumber) external {
         // require(msg.sender == gelatoOp, "caller is not the gelato operator");
         randomNumber = newRandomNumber;
+    }
+
+    function getRandom() external view returns (uint256) {
+        return randomNumber;
     }
 
     function pickWinner() public {
