@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "lib/automate/contracts/Automate.sol";
+import "lib/automate/contracts/integrations/AutomateTaskCreator.sol";
 
-contract Lottery is Automate {
+contract Lottery is AutomateTaskCreator {
     address public deployer;
     address[] public players;
     LotteryState public state;
@@ -25,11 +25,17 @@ contract Lottery is Automate {
     event WinnerSelected(address indexed winner, uint256 amount);
     event LotteryEnded(uint256 timestamp);
 
-    constructor(uint256 _lotteryDuration, uint256 _minDepositAmount) {
+    constructor(uint256 _lotteryDuration, uint256 _minDepositAmount, address _automate)
+      AutomateTaskCreator(_automate, msg.sender) // fundsOwner == deployer
+    {
         deployer = msg.sender;
         state = LotteryState.NOTRUNNING;
         lotteryDuration = _lotteryDuration;
         minDepositAmount = _minDepositAmount;
+    }
+
+    function depositForGelato() external payable {
+        _depositFunds(msg.value, ETH);
     }
 
     function startLottery() public {
@@ -72,7 +78,7 @@ contract Lottery is Automate {
         payable(winner).transfer(amountWon);
 
         emit WinnerSelected(winner, amountWon);
-        emit LotteryEnded(block.timestamp, winner, amountWon);
+        emit LotteryEnded(block.timestamp);
 
         players = new address[](0);
         state = LotteryState.NOTRUNNING;

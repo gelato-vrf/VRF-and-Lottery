@@ -8,11 +8,12 @@ contract LotteryTest is Test {
     Lottery public lottery;
 
     function setUp() public {
-        lottery = new Lottery(1 hours, 1 ether);
+        address automate = address(0xdead); // TODO
+        lottery = new Lottery(1 hours, 1 ether, automate);
     }
 
     function testStartLottery() public {
         lottery.startLottery();
-        assertEq(lottery.state(), Lottery.LotteryState.RUNNING);
+        assertEq(uint(lottery.state()), uint(Lottery.LotteryState.RUNNING));
     }
 }
