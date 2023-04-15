@@ -18,12 +18,16 @@ contract Lottery {
         RUNNING
     }
 
-    event LotteryStarted(uint256 startTime, uint256 endTime, address LotteryDeployer);
+    event LotteryStarted(
+        uint256 startTime,
+        uint256 endTime,
+        address LotteryDeployer
+    );
     event WinnerSelected(address indexed winner, uint256 amount);
     event LotteryEnded(uint256 timestamp);
 
-    constructor(uint256 _lotteryDuration, address _gelatoOp, uint256 _minDepositAmount) {
-        gelatoOp = _gelatoOp;
+    constructor(uint256 _lotteryDuration, uint256 _minDepositAmount) {
+        // gelatoOp = _gelatoOp;
         deployer = msg.sender;
         state = LotteryState.NOTRUNNING;
         lotteryDuration = _lotteryDuration;
@@ -39,21 +43,30 @@ contract Lottery {
     }
 
     function enter() public payable {
-        require(msg.value >= minDepositAmount, "Please deposit the minimum amount required");
+        require(
+            msg.value >= minDepositAmount,
+            "Please deposit the minimum amount required"
+        );
         require(state == LotteryState.RUNNING, "Lottery is not running");
-        require(block.timestamp < lotteryEndTime, "Lottery entry time has ended");
+        require(
+            block.timestamp < lotteryEndTime,
+            "Lottery entry time has ended"
+        );
 
         players.push(msg.sender);
     }
 
     function getRandom(uint256 newRandomNumber) external {
-        require(msg.sender == gelatoOp, "caller is not the gelato operator");
+        // require(msg.sender == gelatoOp, "caller is not the gelato operator");
         randomNumber = newRandomNumber;
     }
 
     function pickWinner() public {
         require(state == LotteryState.RUNNING, "Lottery is not running");
-        require(block.timestamp >= lotteryEndTime, "Lottery time has not ended");
+        require(
+            block.timestamp >= lotteryEndTime,
+            "Lottery time has not ended"
+        );
         require(players.length > 0, "No players in the lottery");
 
         uint256 randomWinner = randomNumber % players.length;
@@ -72,7 +85,11 @@ contract Lottery {
         return players;
     }
 
-    function getLotteryTimes() public view returns (uint256 startTime, uint256 endTime) {
+    function getLotteryTimes()
+        public
+        view
+        returns (uint256 startTime, uint256 endTime)
+    {
         if (state == LotteryState.NOTRUNNING) {
             return (0, 0);
         } else {
