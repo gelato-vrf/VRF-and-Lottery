@@ -10,6 +10,7 @@ contract VRF {
     function setGelatoOperator(address _gelatoOp) external {
       require(!initOperator, "gelatoOp already initialized");
       gelatoOp = _gelatoOp;
+      initOperator = true;
     }
 
     function setRandom(uint256 _rng) external {
