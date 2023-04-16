@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract GelatoVRF {
+contract VRF {
     uint256 private rng;
     address public gelatoOp;
-    uint256 lastUpdate;
+    uint256 public lastUpdate;
 
     constructor(address _gelatoOp) {
         gelatoOp = _gelatoOp;
@@ -13,6 +13,7 @@ contract GelatoVRF {
     function setRandom(uint256 _rng) external {
         require(msg.sender == gelatoOp, "caller is not the gelato operator");
         rng = _rng;
+        lastUpdate = block.timestamp;
     }
 
     function getRandom(string calldata space) external view returns (uint256) {
