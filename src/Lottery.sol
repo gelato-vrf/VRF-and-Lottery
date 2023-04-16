@@ -9,6 +9,7 @@ contract Lottery {
     uint256 public lotteryEndTime;
     uint256 public lotteryDuration;
     uint256 public minDepositAmount;
+    address public previousWinner;
 
     address gelatoOp;
     uint256 randomNumber;
@@ -40,6 +41,18 @@ contract Lottery {
         lotteryStartTime = block.timestamp;
         lotteryEndTime = block.timestamp + lotteryDuration;
         emit LotteryStarted(lotteryStartTime, lotteryEndTime, deployer);
+    }
+
+    function endLotteryIfNoOneJoins() public {
+        require(state == LotteryState.RUNNING, "Lottery is not running");
+        require(
+            block.timestamp >= lotteryEndTime,
+            "Lottery time has not ended"
+        );
+        require(players.length == 0, "No players in the lottery");
+        players = new address[](0);
+        state = LotteryState.NOTRUNNING;
+        emit LotteryEnded(block.timestamp);
     }
 
     function enter() public payable {
@@ -75,6 +88,7 @@ contract Lottery {
 
         uint256 randomWinner = randomNumber % players.length;
         address winner = players[randomWinner];
+        previousWinner = winner;
         uint256 amountWon = address(this).balance;
         payable(winner).transfer(amountWon);
 
@@ -107,5 +121,9 @@ contract Lottery {
         } else {
             return deployer;
         }
+    }
+
+    function getPreviousWinner() public view returns (address) {
+        return previousWinner;
     }
 }
