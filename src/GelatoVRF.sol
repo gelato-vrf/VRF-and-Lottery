@@ -5,9 +5,11 @@ contract VRF {
     uint256 private rng;
     address public gelatoOp;
     uint256 public lastUpdate;
+    bool initOperator;
 
-    constructor(address _gelatoOp) {
-        gelatoOp = _gelatoOp;
+    function setGelatoOperator(address _gelatoOp) external {
+      require(!initOperator, "gelatoOp already initialized");
+      gelatoOp = _gelatoOp;
     }
 
     function setRandom(uint256 _rng) external {
@@ -17,6 +19,8 @@ contract VRF {
     }
 
     function getRandom(string calldata space) external view returns (uint256) {
+        require(initOperator, "gelatoOp not initialized");
+
         bytes memory concat = abi.encodePacked(space, rng);
         uint256 hash = uint256(keccak256(concat));
         return hash;
