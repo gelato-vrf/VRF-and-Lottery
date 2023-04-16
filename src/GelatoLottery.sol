@@ -26,7 +26,7 @@ contract GelatoLottery {
     event LotteryEnded(uint256 timestamp);
 
     constructor(address _vrf, uint256 _lotteryDuration, uint256 _minDepositAmount) {
-        vrf = _vrf;
+        vrf = VRF(_vrf);
         deployer = msg.sender;
         state = LotteryState.NOTRUNNING;
         lotteryDuration = _lotteryDuration;
