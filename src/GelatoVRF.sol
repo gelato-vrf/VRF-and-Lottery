@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.16;
+
+import {Errors} from "./Errors.sol";
 
 contract VRF {
     uint256 private rng;
@@ -8,19 +10,19 @@ contract VRF {
     bool initOperator;
 
     function setGelatoOperator(address _gelatoOp) external {
-      require(!initOperator, "gelatoOp already initialized");
+      if (initOperator) revert Errors.OperatorAlreadySet();
       gelatoOp = _gelatoOp;
       initOperator = true;
     }
 
     function setRandom(uint256 _rng) external {
-        require(msg.sender == gelatoOp, "caller is not the gelato operator");
+        if (msg.sender != gelatoOp) revert Errors.CallerIsNotOperator();
         rng = _rng;
         lastUpdate = block.timestamp;
     }
 
     function getRandom(string calldata space) external view returns (uint256) {
-        require(initOperator, "gelatoOp not initialized");
+        if (!initOperator) revert Errors.OperatorNotSet();
 
         bytes memory concat = abi.encodePacked(space, rng);
         uint256 hash = uint256(keccak256(concat));

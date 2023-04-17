@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {VRF} from "./GelatoVRF.sol";
+import {VRF} from "src/GelatoVRF.sol";
 
 contract GelatoLottery {
     address public deployer;
