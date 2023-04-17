@@ -2,10 +2,10 @@
 pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
-import "../src/Lottery.sol";
+// import "../src/Lottery.sol";
 
 contract LotteryTest is Test {
-    Lottery public lottery;
+    // Lottery public lottery;
     /*
     function setUp() public {
         address automate = address(0xdead); // TODO
