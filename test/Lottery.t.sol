@@ -5,8 +5,8 @@ import "forge-std/Test.sol";
 // import "../src/Lottery.sol";
 
 contract LotteryTest is Test {
-    // Lottery public lottery;
-    /*
+// Lottery public lottery;
+/*
     function setUp() public {
         address automate = address(0xdead); // TODO
         // lottery = new Lottery(1 hours, 1 ether, automate);

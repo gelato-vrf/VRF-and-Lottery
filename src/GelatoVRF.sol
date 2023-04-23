@@ -10,9 +10,9 @@ contract VRF {
     bool initOperator;
 
     function setGelatoOperator(address _gelatoOp) external {
-      if (initOperator) revert Errors.OperatorAlreadySet();
-      gelatoOp = _gelatoOp;
-      initOperator = true;
+        if (initOperator) revert Errors.OperatorAlreadySet();
+        gelatoOp = _gelatoOp;
+        initOperator = true;
     }
 
     function setRandom(uint256 _rng) external {

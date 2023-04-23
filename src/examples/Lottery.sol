@@ -12,9 +12,8 @@ contract GelatoLottery {
     uint256 public lotteryDuration;
     uint256 public minDepositAmount;
     address public previousWinner;
-    
-    VRF public vrf;
 
+    VRF public vrf;
 
     enum LotteryState {
         NOTRUNNING,
