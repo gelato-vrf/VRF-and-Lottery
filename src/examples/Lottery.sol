@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {VRF} from "./GelatoVRF.sol";
+import {VRF} from "src/GelatoVRF.sol";
 
 contract GelatoLottery {
     address public deployer;
@@ -12,9 +12,8 @@ contract GelatoLottery {
     uint256 public lotteryDuration;
     uint256 public minDepositAmount;
     address public previousWinner;
-    
-    VRF public vrf;
 
+    VRF public vrf;
 
     enum LotteryState {
         NOTRUNNING,
